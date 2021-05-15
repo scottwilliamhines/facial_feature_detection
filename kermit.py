@@ -11,6 +11,33 @@ capture = cv2.VideoCapture(2)
 face_detector = dlib.get_frontal_face_detector()
 feature_predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
+def feature_landmarks():
+    while True:
+        _, frame = capture.read()
+
+        grayscale = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
+
+        faces = face_detector(grayscale)
+
+        for face in faces:
+            x1 = face.left()
+            y1 = face.top()
+            x2 = face.right()
+            y2 = face.bottom()
+
+            landmarks = feature_predictor(image = grayscale, box=face)
+
+            for n in range(0,68):
+                x = landmarks.part(n).x
+                y = landmarks.part(n).y
+
+                cv2.circle(img=frame, center=(x,y), radius=8, color= (0,255,0), thickness=-1)
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
 def kermit_face():
     while True:
         _, frame = capture.read()
@@ -329,11 +356,25 @@ def gonzo():
 def gonzo_window():
     return render_template('gonzo.html')
 
+@app.route('/landmark_vis')
+def landmark_vis():
+    #Video streaming route. Put this in the src attribute of an img tag
+    return Response(feature_landmarks(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/landmark_window')
+def landmark_window():
+    return render_template('landmark.html')
+
 @app.route('/')
 def index():
     display_str = 'Hello! Pick a Muppet'
     # code below makes a button to go to the '/rainbow' block
     go_to_muppet_html = '''
+        <br>
+        <form action="/landmark_window" >
+            <input type="submit" value = "Landmarks"/>
+        </form>
+        <br>
         <form action="/kermit_window" >
             <input type="submit" value = "Kermit"/>
         </form>
