@@ -22,13 +22,13 @@ I was fortunate in planning for this project to stumble upon this [Article](http
 
 1. Import your dependencies:
    
-    import cv2
-    import dlib
-    import numpy as np
-    import os
+        import cv2
+        import dlib
+        import numpy as np
+        import os
 
 2. Use DLIB to detect the face and draw a bounding box over each face in the image.
    
-    face_detector = dlib.get_frontal_face_detector()
+        face_detector = dlib.get_frontal_face_detector()
     
     
