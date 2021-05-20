@@ -27,8 +27,57 @@ I was fortunate in planning for this project to stumble upon this [Article](http
         import numpy as np
         import os
 
-2. Use DLIB to detect the face and draw a bounding box over each face in the image.
+2. Instantiate a variable with DLIB's frontal face detector. This allows us to isolate any faces in the image and draw a bounding box on them. 
    
         face_detector = dlib.get_frontal_face_detector()
     
     
+3. Instantiate a variable with DLIB's shape predictor. Here I pass in a pre-trained model that I found at this [github](https://github.com/italojs/facial-landmarks-recognition) by Italo Jose. Additional credit goes to the article linked above by Juan Cruz Martinez for pointing me in the right direction. 
+
+        feature_predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+        
+4. In this next bit of code we are able to use `CV2` to capture video from our designated camera, capture frames from that camera, convert each frame to grayscale, pass those frames into our `face_detector` and then pass each face from the face detector into our `shape_predictor`.
+
+        capture = cv2.VideoCapture(2)
+
+        while True:
+            _, frame = capture.read()
+    
+            grayscale = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
+
+            faces = face_detector(grayscale)
+
+            for face in faces:
+                x1 = face.left()
+                y1 = face.top()
+                x2 = face.right()
+                y2 = face.bottom()
+
+                landmarks = feature_predictor(image = grayscale, box=face)
+                
+5. Finally, once we have our landmarks predicted, we can draw a circle on the `frame` for every landmark position. 
+
+
+                for n in range(0,68):
+                    x = landmarks.part(n).x
+                    y = landmarks.part(n).y
+            
+                    cv2.circle(img=frame, center=(x,y), radius=8, color= (0,255,0), thickness=-1)
+    
+            cv2.imshow(winname = "Facial Feature Detection", mat=frame)
+        
+            if cv2.waitKey(20) & 0xFF == 27:
+            break
+    
+        capture.release()
+
+        cv2.destroyAllWindows()
+        
+Below is a short example of what the code above produces on live video. 
+
+![](https://github.com/scottwilliamhines/facial_feature_detection/blob/main/facial_detection_gif.gif)
+
+### Adding an Overlay
+
+
+        
