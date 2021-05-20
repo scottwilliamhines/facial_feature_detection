@@ -75,11 +75,11 @@ I was fortunate in planning for this project to stumble upon this [Article](http
         
 Below is a short example of what the code above produces on live video. 
 
-![](https://github.com/scottwilliamhines/facial_feature_detection/blob/main/facial_detection_gif.gif)
+![](https://github.com/scottwilliamhines/facial_feature_detection/blob/main/readme_assets/facial_detection_gif.gif)
 
 ---
 
-**A quick note on how DLIB's shape predictor works:**
+### A quick note on how DLIB's shape predictor works:
 
 DLIB's face predictor passes a sparse matrix of pixel information from the grayscale `frontal_face_detector` as features into an ensemble of gradient boosted trees model predicting on the (x,y) coordinates of our landmarks. The high level idea of how this trains is as follows:
 
@@ -87,9 +87,11 @@ DLIB's face predictor passes a sparse matrix of pixel information from the grays
 
 - It then calculates the residuals from those predictions. 
 
-- The next step is to create an ensemble of gradient boosted trees and predict on the residuals based on the features selected. We multiply these predictions by the learning rate and add that to our original predicted x,y coordinates. 
+- The next step is to create an ensemble of gradient boosted trees and predict on the residuals based on the features selected. 
 
-- Once we have our slightly adjusted predicted coordinates, we can update our residuals and start the process all over again by predicting new residuals based on features, averaging any duplicates, multiplying by our learning rate, and updating our coordinates again with the residuals of the new tree. 
+- We multiply these predictions by the learning rate and add that to our original predicted x,y coordinates. 
+
+- Once we have our slightly adjusted predicted coordinates, we can update our residuals and start the process all over again by predicting new residuals based on features, averaging the values in each individual leaf, multiplying by our learning rate, and updating our coordinates again with the residuals of this new tree. 
 
 - This process continues until we reach a pre-set number of trees or the residuals are no longer changing our predicted coordinates by a significant amount. 
 
@@ -97,5 +99,9 @@ DLIB's face predictor passes a sparse matrix of pixel information from the grays
 
 ### Adding an Overlay
 
-Now that we have the code all put together to predict the landmarks, 
+Now that we have the code all put together to predict the landmarks, we can begin adding overlay images that track to those landmarks. To do this we need to annotate any images that we want to overlay with the coordinates of the landmarks we want the image to track to. For this purpose I used an online application called [makesense](https://www.makesense.ai/). 
+
+- Select get started
+
+- Add labels coorespnding to the numbers of the landmarks
         

@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 capture = cv2.VideoCapture(2)
 face_detector = dlib.get_frontal_face_detector()
-feature_predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+feature_predictor = dlib.shape_predictor('model_assets/shape_predictor_68_face_landmarks.dat')
 
 def feature_landmarks():
     while True:
@@ -99,14 +99,14 @@ def kermit_face():
                         vector[67],
                     ])
 
-            src_pts_1 =  np.genfromtxt('kermit_labels.csv', delimiter=',')
+            src_pts_1 =  np.genfromtxt('model_assets/kermit_labels.csv', delimiter=',')
             src_pts = np.empty([37,2], dtype = 'float32')
             for i, row in enumerate(src_pts_1):
                 src_pts[i][0] = row[1]
                 src_pts[i][1] = row[2]
 
             # load mask image
-            mask_img = cv2.imread('kermit.png', cv2.IMREAD_UNCHANGED)
+            mask_img = cv2.imread('model_assets/kermit.png', cv2.IMREAD_UNCHANGED)
             mask_img = mask_img.astype(np.float32)
 
             M, _ = cv2.findHomography(src_pts, dst_pts)
@@ -196,14 +196,14 @@ def miss_piggy_face():
                         vector[67],
                     ])
 
-            src_pts_1 =  np.genfromtxt('miss_piggy_labels_2.csv', delimiter=',')
+            src_pts_1 =  np.genfromtxt('model_assets/miss_piggy_labels_2.csv', delimiter=',')
             src_pts = np.empty([37,2], dtype = 'float32')
             for i, row in enumerate(src_pts_1):
                 src_pts[i][0] = row[1]
                 src_pts[i][1] = row[2]
 
             # load mask image
-            mask_img = cv2.imread('miss_piggy.png', cv2.IMREAD_UNCHANGED)
+            mask_img = cv2.imread('model_assets/miss_piggy.png', cv2.IMREAD_UNCHANGED)
             mask_img = mask_img.astype(np.float32)
 
             M, _ = cv2.findHomography(src_pts, dst_pts)
@@ -293,14 +293,14 @@ def gonzo_face():
                         vector[67],
                     ])
 
-            src_pts_1 =  np.genfromtxt('gonzo_labels.csv', delimiter=',')
+            src_pts_1 =  np.genfromtxt('model_assets/gonzo_labels.csv', delimiter=',')
             src_pts = np.empty([37,2], dtype = 'float32')
             for i, row in enumerate(src_pts_1):
                 src_pts[i][0] = row[1]
                 src_pts[i][1] = row[2]
 
             # load mask image
-            mask_img = cv2.imread('gonzo.png', cv2.IMREAD_UNCHANGED)
+            mask_img = cv2.imread('model_assets/gonzo.png', cv2.IMREAD_UNCHANGED)
             mask_img = mask_img.astype(np.float32)
 
             M, _ = cv2.findHomography(src_pts, dst_pts)
