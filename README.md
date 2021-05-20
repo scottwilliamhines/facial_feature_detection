@@ -103,5 +103,132 @@ Now that we have the code all put together to predict the landmarks, we can begi
 
 - Select get started
 
-- Add labels coorespnding to the numbers of the landmarks
+- Add labels coorespnding to the numbers of the landmarks as seen below
+
+<img src="https://github.com/scottwilliamhines/facial_feature_detection/blob/main/readme_assets/facial_landmarks.jpeg"
+     width = "300"/>
+     
+- Then add points on the image and add the correct labels to them. 
+
+- Finally, export a csv with the annotations. 
+
+With these annotations we can put all of the pieces together and get a working filter with the following steps.
+
+1. Repeat steps 1 thru 4 above giving us the following code. 
+
+        face_detector = dlib.get_frontal_face_detector()
+        feature_predictor = dlib.shape_predictor('model_assets/shape_predictor_68_face_landmarks.dat')
         
+        capture = cv2.VideoCapture(2)
+
+        while True:
+            _, frame = capture.read()
+
+            grayscale = cv2.cvtColor(src=frame, code=cv2.COLOR_BGR2GRAY)
+
+            faces = face_detector(grayscale)
+
+            for face in faces:
+                x1 = face.left()
+                y1 = face.top()
+                x2 = face.right()
+                y2 = face.bottom()
+
+                landmarks = feature_predictor(image = grayscale, box=face)
+                
+2. Load an empty numpy array with the x and y coordinates of the landmarks predicted by our model.
+
+                 vector = np.empty([68, 2], dtype = 'float32')
+                 for b in range(68):
+                     vector[b][0] = landmarks.part(b).x
+                     vector[b][1] = landmarks.part(b).y
+                     
+3. Choose the landmarks we want to use for our overlay
+
+                 dst_pts = np.array(
+                    [
+                        vector[0],
+                        vector[1],
+                        vector[2],
+                        vector[3],
+                        vector[4],
+                        vector[5],
+                        vector[6],
+                        vector[7],
+                        vector[8],
+                        vector[9],
+                        vector[10],
+                        vector[11],
+                        vector[12],
+                        vector[13],
+                        vector[14],
+                        vector[15],
+                        vector[16],
+                        vector[49],
+                        vector[50],
+                        vector[51],
+                        vector[52],
+                        vector[53],
+                        vector[54],
+                        vector[55],
+                        vector[56],
+                        vector[57],
+                        vector[58],
+                        vector[59],
+                        vector[60],
+                        vector[61],
+                        vector[62],
+                        vector[62],
+                        vector[63],
+                        vector[64],
+                        vector[65],
+                        vector[66],
+                        vector[67],
+                    ])
+                    
+4. Load a numpy array with the x and y coordinates from our annotations.
+
+                src_pts_1 =  np.genfromtxt('model_assets/kermit_labels.csv', delimiter=',')
+                src_pts = np.empty([37,2], dtype = 'float32')
+                for i, row in enumerate(src_pts_1):
+                    src_pts[i][0] = row[1]
+                    src_pts[i][1] = row[2]
+                    
+5. Load in the overlay image and create a kernel that will transform and re-size the image as it tracks along with the landmarks. 
+
+
+                mask_img = cv2.imread('model_assets/kermit.png', cv2.IMREAD_UNCHANGED)
+                mask_img = mask_img.astype(np.float32)
+
+                M, _ = cv2.findHomography(src_pts, dst_pts)
+
+                transformed_mask = cv2.warpPerspective(
+                mask_img,
+                M,
+                (frame.shape[1], frame.shape[0]),
+                None,
+                cv2.INTER_LINEAR,
+                cv2.BORDER_CONSTANT,
+                )
+                
+6. Make an alpha mask our of the image, apply it to the original captured frame and then replace the masked pixels with the transformed overlay. 
+
+                alpha_mask = transformed_mask[:, :, 3]
+                alpha_image = 1.0 - alpha_mask
+                trans_h = transformed_mask.shape[0]
+                trans_w = transformed_mask.shape[1]
+
+                mask = (transformed_mask[:,:,3] != 0).flatten()
+                kermit = transformed_mask[:,:,0:3].flatten().reshape(-1,3)
+                cap = frame.flatten().reshape(-1,3)
+                cap[mask] = kermit[mask]
+                final = cap.reshape(frame.shape[0],frame.shape[1],3)
+                 
+All that is left after that is to show your final product. We are left with something like this. 
+
+<img src="https://github.com/scottwilliamhines/facial_feature_detection/blob/main/readme_assets/kermit_face.gif"
+     width = "300"/>
+     
+ ### Conclusion
+ 
+ I had a really great time with this project. There are a lot of amazing resources out there for this because it isn't exactly a new problem to solve. However, I think that the use cases for this type of tech a broad and far reaching. This type of feature detection can help with eye tracking statistics, which marketing teams can use to determine the effectiveness of their adds. It can be used to model new products before purchasing them. It can be used in tv and film to assist in creating effects. It can also be used in physical therapy to help determine remotely if a client is performing their exercises correctly. I believe that there is a bright present for this tech and an even brighter future. I have loved learning more about it and I am very much looking forward to continuing my path of discovery. 
