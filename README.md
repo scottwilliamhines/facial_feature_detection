@@ -77,7 +77,11 @@ Below is a short example of what the code above produces on live video.
 
 ![](https://github.com/scottwilliamhines/facial_feature_detection/blob/main/facial_detection_gif.gif)
 
+##### A quick note on how DLIB's shape predictor works:
+
+DLIB's face predictor passes a sparse matrix of pixel information from the grayscale `frontal_face_detector` as features into an ensemble of gradient boosted trees model predicting on the (x,y) coordinates of our landmarks. The high level idea of how this trains is that it takes the average "Shape" (which is a vector of the x,y coordinates of all our landmarks) and passes those in as a prediction for the shape of every image in the training set. It then calculates the residuals from those predictions. The next step is to create an ensemble of gradient boosted trees and predict on the residuals based on the features selected. We multiply these predictions by the learning rate and add that to our original predicted x,y coordinates. Once we have our slightly adjusted predicted coordinates, we can update our residuals and start the process all over again by predicting new residuals based on features, averaging any duplicates, multiplying by our learning rate, and updating our coordinates again with the residuals of the new tree. This process continues until we reach a pre-set number of trees or the residuals are no longer changing our predicted coordinates by a significant amount. 
+
 ### Adding an Overlay
 
-
+Now that we have the code all put together to predict the landmarks, 
         
