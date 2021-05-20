@@ -1,3 +1,6 @@
+<img src="https://github.com/scottwilliamhines/facial_feature_detection/blob/main/readme_assets/facial_detection_banner.png"
+     width = "800"/>
+
 # Facial Feature Detection
 Active facial feature detection and it's uses in the world
 
